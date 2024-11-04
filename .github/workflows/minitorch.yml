@@ -22,28 +22,36 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest pep8-naming
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Test with pytest
+    - name: Test with pytest 0
       run: |
         echo "Module 0"
         pytest tests -x -m task0_1
         pytest tests -x -m task0_2
         pytest tests -x -m task0_3
         pytest tests -x -m task0_4
+    - name: Test with pytest 1
+      run: |
         echo "Module 1"
         pytest tests -x -m task1_1
         pytest tests -x -m task1_2
         pytest tests -x -m task1_3
         pytest tests -x -m task1_4
+        - name: Test with pytest 2
+      run: |
         echo "Module 2"
         pytest tests -x -m task2_1
         pytest tests -x -m task2_2
         pytest tests -x -m task2_3
         pytest tests -x -m task2_4
+    - name: Test with pytest 3
+      run: |
         echo "Module 3"
         pytest tests -x -m task3_1
         pytest tests -x -m task3_2
         pytest tests -x -m task3_3
         pytest tests -x -m task3_4
+    - name: Test with pytest 4
+      run: |
         echo "Module 4"
         pytest tests -x -m task4_1
         pytest tests -x -m task4_2
