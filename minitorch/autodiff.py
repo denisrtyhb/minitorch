@@ -23,7 +23,9 @@ def central_difference(f: Any, *vals: Any, arg: int = 0, epsilon: float = 1e-6) 
         An approximation of $f'_i(x_0, \ldots, x_{n-1})$
     """
     # TODO: Implement for Task 1.1.
-    raise NotImplementedError('Need to implement for Task 1.1')
+    val1 = f(*vals)
+    val2 = f(*vals[:arg], vals[arg] + epsilon, *vals[arg+1:])
+    return (val2 - val1) / epsilon
 
 
 variable_count = 1
@@ -51,6 +53,16 @@ class Variable(Protocol):
         pass
 
 
+def topsort_dfs(variable: Variable, used: dict) -> Iterable[Variable]:
+    if used.get(variable.unique_id, False):
+        return []
+    used[variable.unique_id] = True
+
+    for par in variable.parents:
+        yield from topsort_dfs(par, used)
+        
+    yield variable
+
 def topological_sort(variable: Variable) -> Iterable[Variable]:
     """
     Computes the topological order of the computation graph.
@@ -61,8 +73,8 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
     Returns:
         Non-constant Variables in topological order starting from the right.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+    res = list(topsort_dfs(variable, dict()))[::-1]
+    return res
 
 
 def backpropagate(variable: Variable, deriv: Any) -> None:
@@ -77,7 +89,19 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
     # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+    
+    topsort = topological_sort(variable)
+    grads = dict()
+    grads[variable.unique_id] = deriv
+    for monom in topsort:
+        grad = grads.get(monom.unique_id, 0)
+        if monom.is_leaf():
+            monom.accumulate_derivative(grad)
+            continue
+        if monom.is_constant():
+            continue
+        for son, grad in monom.chain_rule(grad):
+            grads[son.unique_id] = grads.get(son.unique_id, 0) + grad
 
 
 @dataclass
